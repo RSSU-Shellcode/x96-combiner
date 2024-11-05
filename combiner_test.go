@@ -14,20 +14,20 @@ import (
 
 func TestCombine(t *testing.T) {
 	t.Run("common", func(t *testing.T) {
+		// xor eax, eax
+		// add eax, 0x86
+		// ret
 		x86 := []byte{
-			// xor eax, eax
 			0x31, 0xC0,
-			// add eax, 86
 			0x05, 0x86, 0x00, 0x00, 0x00,
-			// ret
 			0xC3,
 		}
+		// xor eax, eax
+		// add rax, 0x64
+		// ret
 		x64 := []byte{
-			// xor eax, eax
 			0x31, 0xC0,
-			// add rax, 64
 			0x48, 0x83, 0xC0, 0x64,
-			// ret
 			0xC3,
 		}
 		shellcode := Combine(x86, x64)
@@ -46,12 +46,12 @@ func TestCombine(t *testing.T) {
 	})
 
 	t.Run("padding x86", func(t *testing.T) {
+		// xor eax, eax
+		// add rax, 0x64
+		// ret
 		x64 := []byte{
-			// xor eax, eax
 			0x31, 0xC0,
-			// add rax, 64
 			0x48, 0x83, 0xC0, 0x64,
-			// ret
 			0xC3,
 		}
 		shellcode := Combine(nil, x64)
@@ -70,12 +70,12 @@ func TestCombine(t *testing.T) {
 	})
 
 	t.Run("padding x64", func(t *testing.T) {
+		// xor eax, eax
+		// add eax, 0x86
+		// ret
 		x86 := []byte{
-			// xor eax, eax
 			0x31, 0xC0,
-			// add eax, 86
 			0x05, 0x86, 0x00, 0x00, 0x00,
-			// ret
 			0xC3,
 		}
 		shellcode := Combine(x86, nil)
