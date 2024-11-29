@@ -1,1 +1,1 @@
-go build -v -trimpath -ldflags "-s -w" -o sc-combiner cmd/main.go
+go build -v -trimpath -ldflags "-s -w" -o x96-combiner cmd/main.go
