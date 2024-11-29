@@ -1,15 +1,10 @@
-//go:build windows
-
 package combiner
 
 import (
 	"runtime"
-	"syscall"
 	"testing"
-	"unsafe"
 
 	"github.com/stretchr/testify/require"
-	"golang.org/x/sys/windows"
 )
 
 func TestCombine(t *testing.T) {
@@ -32,8 +27,11 @@ func TestCombine(t *testing.T) {
 		}
 		shellcode := Combine(x86, x64)
 
+		if runtime.GOOS != "windows" {
+			return
+		}
 		addr := loadShellcode(t, shellcode)
-		ret, _, _ := syscall.SyscallN(addr)
+		ret, _, _ := syscallN(addr)
 		rv := int(ret)
 		switch runtime.GOARCH {
 		case "386":
@@ -56,8 +54,11 @@ func TestCombine(t *testing.T) {
 		}
 		shellcode := Combine(nil, x64)
 
+		if runtime.GOOS != "windows" {
+			return
+		}
 		addr := loadShellcode(t, shellcode)
-		ret, _, _ := syscall.SyscallN(addr)
+		ret, _, _ := syscallN(addr)
 		rv := int(ret)
 		switch runtime.GOARCH {
 		case "386":
@@ -80,8 +81,11 @@ func TestCombine(t *testing.T) {
 		}
 		shellcode := Combine(x86, nil)
 
+		if runtime.GOOS != "windows" {
+			return
+		}
 		addr := loadShellcode(t, shellcode)
-		ret, _, _ := syscall.SyscallN(addr)
+		ret, _, _ := syscallN(addr)
 		rv := int(ret)
 		switch runtime.GOARCH {
 		case "386":
@@ -96,19 +100,11 @@ func TestCombine(t *testing.T) {
 	t.Run("padding x96", func(t *testing.T) {
 		shellcode := Combine(nil, nil)
 
+		if runtime.GOOS != "windows" {
+			return
+		}
 		addr := loadShellcode(t, shellcode)
-		ret, _, _ := syscall.SyscallN(addr)
+		ret, _, _ := syscallN(addr)
 		require.Equal(t, 0x00, int(ret))
 	})
-}
-
-func loadShellcode(t *testing.T, sc []byte) uintptr {
-	size := uintptr(len(sc))
-	mType := uint32(windows.MEM_COMMIT | windows.MEM_RESERVE)
-	mProtect := uint32(windows.PAGE_EXECUTE_READWRITE)
-	scAddr, err := windows.VirtualAlloc(0, size, mType, mProtect)
-	require.NoError(t, err)
-	dst := unsafe.Slice((*byte)(unsafe.Pointer(scAddr)), size)
-	copy(dst, sc)
-	return scAddr
 }
