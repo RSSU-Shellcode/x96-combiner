@@ -45,7 +45,7 @@ func Combine(x86, x64 []byte) []byte {
 	// jz [offset]
 	inst = append(inst, 0x0F, 0x84)
 	offset := make([]byte, 4)
-	binary.LittleEndian.PutUint32(offset, uint32(len(x86)))
+	binary.LittleEndian.PutUint32(offset, uint32(len(x86))) // #nosec G115
 	inst = append(inst, offset...)
 	inst = append(inst, x86...)
 	inst = append(inst, x64...)
