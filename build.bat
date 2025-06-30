@@ -1,1 +1,0 @@
-go build -v -trimpath -ldflags "-s -w" -o x96-combiner.exe cmd/main.go
